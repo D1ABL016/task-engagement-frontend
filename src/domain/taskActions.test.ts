@@ -105,7 +105,8 @@ describe('availableActions', () => {
     expect(availableActions(task('completed'), reviewer)[0].comment).toBe('required')
   })
 
-  it('lets a manager drive work actions on behalf of the assignee', () => {
-    expect(names(task('assigned'), otherManager)).toEqual(['start'])
+  it('withholds work actions from a manager — only the assignee or an admin may drive them', () => {
+    expect(names(task('assigned'), otherManager)).toEqual([])
+    expect(names(task('assigned'), admin)).toEqual(['start'])
   })
 })

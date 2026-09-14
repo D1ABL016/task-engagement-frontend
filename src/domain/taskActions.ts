@@ -77,6 +77,8 @@ export function availableActions(task: Task, viewer: CurrentUser): TaskActionDes
       if (descriptor.action === 'approve' && isAssignee) return false
       return true
     }
-    return isAssignee || canManageTasks(viewer)
+    // Assignee-only actions (start/submit/wait-for-client/resume): a manager
+    // is not the worker, so only the assignee or an admin may drive these.
+    return isAssignee || isAdmin
   })
 }
