@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { api } from '../api/endpoints'
 import { ApiError } from '../api/client'
 import { useApi } from '../hooks/useApi'
@@ -15,7 +15,6 @@ import type { Task } from '../api/types'
 
 export default function TaskDetailPage() {
   const { taskId = '' } = useParams()
-  const navigate = useNavigate()
   const { user } = useAuth()
   const { users, userName, engagementLabel } = useReference()
 
@@ -30,8 +29,6 @@ export default function TaskDetailPage() {
   const [busy, setBusy] = useState(false)
   const [pendingAction, setPendingAction] = useState<TaskActionDescriptor | null>(null)
   const [comment, setComment] = useState('')
-  const [deleting, setDeleting] = useState(false)
-  const [deleteReason, setDeleteReason] = useState('')
 
   async function run(work: () => Promise<unknown>) {
     setActionError(null)
@@ -209,15 +206,6 @@ export default function TaskDetailPage() {
               />
             </Field>
           </div>
-
-          <div className="mt-4">
-            <Button
-              variant="danger"
-              onClick={() => { setDeleteReason(''); setActionError(null); setDeleting(true) }}
-            >
-              Delete task
-            </Button>
-          </div>
         </section>
       )}
 
@@ -251,41 +239,6 @@ export default function TaskDetailPage() {
             <div className="mt-4 flex justify-end gap-2">
               <Button type="button" onClick={() => setPendingAction(null)}>Cancel</Button>
               <Button type="submit" variant="primary" disabled={busy}>Confirm</Button>
-            </div>
-          </form>
-        </Modal>
-      )}
-
-      {deleting && (
-        <Modal title="Delete task" onClose={() => setDeleting(false)}>
-          <form
-            onSubmit={(event) => {
-              event.preventDefault()
-              void run(() => api.tasks.remove(task.id, deleteReason)).then((ok) => {
-                if (ok) {
-                  setDeleting(false)
-                  navigate('/tasks?deleted=true')
-                }
-              })
-            }}
-          >
-            <p className="mb-3 text-sm text-slate-600">
-              The task is soft-deleted: the row stays and can be restored.
-            </p>
-            <Field label="Reason (required)">
-              <input
-                className={inputClass}
-                required
-                maxLength={500}
-                value={deleteReason}
-                onChange={(event) => setDeleteReason(event.target.value)}
-              />
-            </Field>
-            {/* The modal covers the page banner, so the error has to appear here too. */}
-            {actionError && <p className="mt-2 text-sm text-rose-600">{actionError}</p>}
-            <div className="mt-4 flex justify-end gap-2">
-              <Button type="button" onClick={() => setDeleting(false)}>Cancel</Button>
-              <Button type="submit" variant="danger" disabled={busy}>Delete</Button>
             </div>
           </form>
         </Modal>
