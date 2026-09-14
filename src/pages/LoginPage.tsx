@@ -3,13 +3,6 @@ import { Navigate, useNavigate } from 'react-router-dom'
 import { useAuth } from '../auth/AuthContext'
 import { ApiError } from '../api/client'
 
-const DEMO_ACCOUNTS = [
-  { email: 'admin@example.com', label: 'Admin — Ada' },
-  { email: 'priya.manager@example.com', label: 'Manager — Priya' },
-  { email: 'sara.member@example.com', label: 'Team member — Sara' },
-]
-const DEMO_PASSWORD = 'Demo1234!'
-
 export default function LoginPage() {
   const { user, signIn } = useAuth()
   const navigate = useNavigate()
@@ -86,29 +79,6 @@ export default function LoginPage() {
             {submitting ? 'Signing in…' : 'Sign in'}
           </button>
         </form>
-
-        <div className="mt-6 border-t border-slate-200 pt-4">
-          <p className="text-xs font-medium uppercase tracking-wide text-slate-400">
-            Demo accounts
-          </p>
-          <div className="mt-2 space-y-1">
-            {DEMO_ACCOUNTS.map((account) => (
-              <button
-                key={account.email}
-                type="button"
-                onClick={() => {
-                  setEmail(account.email)
-                  setPassword(DEMO_PASSWORD)
-                  void submit(account.email, DEMO_PASSWORD)
-                }}
-                className="w-full rounded-md border border-slate-200 px-3 py-2 text-left text-sm
-                           hover:bg-slate-50"
-              >
-                {account.label}
-              </button>
-            ))}
-          </div>
-        </div>
       </div>
     </div>
   )
