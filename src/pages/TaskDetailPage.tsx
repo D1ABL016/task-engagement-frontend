@@ -82,6 +82,7 @@ export default function TaskDetailPage() {
 
   const actions = availableActions(task, user)
   const isManager = canManageTasks(user)
+  const isAdmin = user.role === 'admin'
   // The backend refuses to assign work to a deactivated user with a 409, so
   // offering one here would only produce an error the manager cannot act on.
   const assignableUsers = users.filter((person) => person.is_active)
@@ -176,20 +177,24 @@ export default function TaskDetailPage() {
             </Field>
 
             <Field label="Reviewer">
-              <select
-                className={inputClass}
-                disabled={busy}
-                value={task.reviewer_id}
-                onChange={(event) =>
-                  void run(() =>
-                    api.tasks.updateAssignment(task.id, { reviewer_id: event.target.value }),
-                  )
-                }
-              >
-                {assignableUsers.map((person) => (
-                  <option key={person.id} value={person.id}>{person.full_name}</option>
-                ))}
-              </select>
+              {isAdmin ? (
+                <select
+                  className={inputClass}
+                  disabled={busy}
+                  value={task.reviewer_id}
+                  onChange={(event) =>
+                    void run(() =>
+                      api.tasks.updateAssignment(task.id, { reviewer_id: event.target.value }),
+                    )
+                  }
+                >
+                  {assignableUsers.map((person) => (
+                    <option key={person.id} value={person.id}>{person.full_name}</option>
+                  ))}
+                </select>
+              ) : (
+                <input className={inputClass} disabled value={userName(task.reviewer_id)} />
+              )}
             </Field>
 
             <Field label="Deadline">
