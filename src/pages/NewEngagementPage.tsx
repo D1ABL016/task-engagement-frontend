@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { api } from '../api/endpoints'
 import { ApiError } from '../api/client'
+import { useAuth } from '../auth/AuthContext'
 import { useReference } from '../reference/ReferenceContext'
 import { Button, ErrorBanner, Field, PageHeader, Spinner, inputClass } from '../components'
 import { todayIso } from '../domain/labels'
@@ -9,6 +10,8 @@ import type { EngagementType, RecurrenceFrequency } from '../api/types'
 
 export default function NewEngagementPage() {
   const navigate = useNavigate()
+  const { user } = useAuth()
+  const isAdmin = user?.role === 'admin'
   const {
     clients, serviceTypes, users, reload,
     loading: referenceLoading, error: referenceError,
@@ -16,7 +19,9 @@ export default function NewEngagementPage() {
 
   const [clientId, setClientId] = useState('')
   const [serviceTypeId, setServiceTypeId] = useState('')
-  const [managerId, setManagerId] = useState('')
+  // A manager always owns what they create — the field is only editable for
+  // an admin, who has no natural default to own it instead.
+  const [managerId, setManagerId] = useState(isAdmin ? '' : user?.id ?? '')
   const [engagementType, setEngagementType] = useState<EngagementType>('recurring')
   const [recurrence, setRecurrence] = useState<RecurrenceFrequency>('monthly')
   const [startDate, setStartDate] = useState(todayIso())
@@ -39,7 +44,7 @@ export default function NewEngagementPage() {
       const created = await api.engagements.create({
         client_id: clientId,
         service_type_id: serviceTypeId,
-        manager_id: managerId,
+        ...(isAdmin ? { manager_id: managerId } : {}),
         engagement_type: engagementType,
         // Present only for recurring: the backend rejects the other combinations.
         ...(engagementType === 'recurring' ? { recurrence } : {}),
@@ -112,13 +117,17 @@ export default function NewEngagementPage() {
         </Field>
 
         <Field label="Manager" error={fieldErrors['manager_id']}>
-          <select className={inputClass} required value={managerId}
-                  onChange={(event) => setManagerId(event.target.value)}>
-            <option value="">Choose a manager</option>
-            {managers.map((person) => (
-              <option key={person.id} value={person.id}>{person.full_name}</option>
-            ))}
-          </select>
+          {isAdmin ? (
+            <select className={inputClass} required value={managerId}
+                    onChange={(event) => setManagerId(event.target.value)}>
+              <option value="">Choose a manager</option>
+              {managers.map((person) => (
+                <option key={person.id} value={person.id}>{person.full_name}</option>
+              ))}
+            </select>
+          ) : (
+            <input className={inputClass} disabled value={user?.full_name ?? ''} />
+          )}
         </Field>
 
         <Field label="Type" error={fieldErrors['engagement_type']}>

@@ -59,7 +59,7 @@ export const api = {
     create: (body: {
       client_id: string
       service_type_id: string
-      manager_id: string
+      manager_id?: string
       engagement_type: EngagementType
       recurrence?: RecurrenceFrequency | null
       start_date: string
