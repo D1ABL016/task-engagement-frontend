@@ -64,19 +64,4 @@ one account per role as a one-click button.
 | `src/layout/` | The signed-in shell: role-filtered sidebar and header |
 | `src/pages/` | One file per screen |
 
-## Notes
 
-**Authentication.** The access token is kept in memory; the refresh token is
-kept in `localStorage` so a page reload can restore the session. Anything in
-`localStorage` is readable by script, so this trades some XSS exposure for a
-usable reload. A `HttpOnly` refresh cookie would be the production answer and
-would need backend support.
-
-**Task buttons.** `src/domain/taskActions.ts` mirrors the backend's transition
-table to decide which buttons to show. It enforces nothing — the API re-checks
-every rule, and a button that should not have been shown produces a 403 or 409
-rather than an unauthorized change.
-
-**Deleted engagements.** The API cannot list them, so the application offers no
-deleted-engagement view and no restore control. Deleted *tasks* are listable and
-have both.
