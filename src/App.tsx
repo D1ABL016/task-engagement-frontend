@@ -25,13 +25,13 @@ export default function App() {
             <Route path="/" element={<DashboardPage />} />
             <Route path="/tasks" element={<TasksPage />} />
             <Route path="/tasks/:taskId" element={<TaskDetailPage />} />
-            <Route path="/engagements" element={<EngagementsPage />} />
-            <Route path="/engagements/:engagementId" element={<EngagementDetailPage />} />
           </Route>
         </Route>
 
         <Route element={<RequireAuth roles={['manager', 'admin']} />}>
           <Route element={<ReferenceProvider><AppLayout /></ReferenceProvider>}>
+            <Route path="/engagements" element={<EngagementsPage />} />
+            <Route path="/engagements/:engagementId" element={<EngagementDetailPage />} />
             <Route path="/engagements/new" element={<NewEngagementPage />} />
           </Route>
         </Route>

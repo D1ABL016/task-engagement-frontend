@@ -6,7 +6,7 @@ import type { UserRole } from '../api/types'
 const NAV: Array<{ to: string; label: string; roles?: UserRole[] }> = [
   { to: '/', label: 'Dashboard' },
   { to: '/tasks', label: 'Tasks' },
-  { to: '/engagements', label: 'Engagements' },
+  { to: '/engagements', label: 'Engagements', roles: ['manager', 'admin'] },
   { to: '/admin/clients', label: 'Clients', roles: ['admin'] },
   { to: '/admin/users', label: 'Users', roles: ['admin'] },
   { to: '/admin/service-types', label: 'Service types', roles: ['admin'] },
